@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>DayTrip.App</title>
+    <base href="/"/>
+    <link href="css/app.css" rel="stylesheet"/>
+    <link href="css/site.css" rel="stylesheet"/>
+    <link href="manifest.json" rel="manifest"/>
+    <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png"/>
+
+    <link href="_content/Blazored.Modal/blazored-modal.css" rel="stylesheet"/>
+</head>
+
+<body style="background-color: #71dce1; width: 100%; height: 100%">
+<div id="app" style="font-family:'Courier New';font-weight:bold;">
+    <div class="center-align-background" style="width:50%; margin-left:auto; margin-right:auto;">
+        <div class="form-outer" style="min-width: 250px; max-width: 500px; margin-left:auto; margin-right:auto">
+            <img src="/assets/icons/DayTrip.png" style="padding-top:30%; border-radius:10px;display: block;margin-left: auto; margin-right: auto;" width="50%" height="auto" />
+        </div>
+    </div>
+</div>
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
+</div>
+<script src="js/index.js"></script>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key="></script>
+<script src="_framework/blazor.webassembly.js"></script>
+
+<script src="_content/Blazored.Modal/blazored.modal.js"></script>
+<script>navigator.serviceWorker.register('service-worker.js');</script>
+<script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</body>
+
+</html>

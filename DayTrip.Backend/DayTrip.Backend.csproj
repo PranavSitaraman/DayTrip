@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <None Remove="usersetup.sql" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="linq2db.AspNet" Version="4.0.0-preview.5" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="3.1.7" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="RestSharp" Version="106.15.0" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\DayTrip.Shared\DayTrip.Shared.csproj" />
+      <ProjectReference Include="..\UserManagement\UserManagement.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,114 @@
+﻿@inject IJSRuntime Js;
+@using System
+
+<div id="@_mapId" class="google-map"></div>
+
+
+@code {
+
+    [Parameter]
+    public Func<double, double, Task> OnLocChangedAsync { get; set; } 
+    [Parameter]
+    public Func<double, double, Task> OnLocSetAsync { get; set; } 
+    [Parameter]
+    public Func<Guid, Task> ViewDetailsCallback { get; set; }
+    
+    [Parameter]
+    public Func<double, double, Task> OnLongPressAsync { get; set; }
+
+    public async Task OnLocationChangedAsync()
+    {
+        await Js.InvokeVoidAsync("moveMeMarker", _lat, _lon);
+        await OnLocChangedAsync(_lat, _lon);
+    }
+
+    [JSInvokable]
+    public async Task ViewDetails(string idString)
+    {
+        Guid.TryParse(idString, out Guid id);
+        await ViewDetailsCallback(id);
+    }
+    
+    
+    [JSInvokable]
+    public async Task OnLongPress(double lat, double lon)
+    {
+        Console.WriteLine(lat);
+        Console.WriteLine(lon);
+        await OnLongPressAsync(lat, lon);
+    }
+    
+}
+
+@code {
+
+    private string _mapId;
+    private double _lat;
+    private double _lon;
+    private bool _mapsInitialized;
+    private bool _domReady;
+    private bool _locationReady;
+    private DotNetObjectReference<MapComponent> _objectReference;
+    
+    protected override void OnInitialized()
+    {
+        _mapId = $"gMap-{Guid.NewGuid()}";
+        _objectReference = DotNetObjectReference.Create(this);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GeoLocate();
+    }
+
+    private async Task GeoLocate()
+    {
+        bool location = await Js.InvokeAsync<bool>("getLocation", _objectReference);
+    }
+
+    [JSInvokable]
+    public async Task SetLocation(double lat, double lon)
+    {
+        _lat = lat;
+        _lon = lon;
+        _locationReady = true;
+        if (!_mapsInitialized && _domReady)
+        {
+            await InitMap();
+            await OnLocSetAsync(_lat, _lon);
+        }
+        else
+        {
+            await OnLocationChangedAsync();
+        }
+    }
+
+    private async Task InitMap()
+    {
+        if (_domReady)
+        {
+            await Js.InvokeVoidAsync("initMap", _objectReference, _mapId, _lat, _lon, 18);
+            await OnLocChangedAsync(_lat, _lon);
+            _mapsInitialized = true;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Console.WriteLine(_lat);
+        Console.WriteLine(_lon);
+        if (firstRender)
+        {
+            if (_locationReady)
+            {
+                await InitMap();
+                _mapsInitialized = true;
+            }
+            else
+            {
+                _domReady = true;
+            }
+        }
+    }
+}
+

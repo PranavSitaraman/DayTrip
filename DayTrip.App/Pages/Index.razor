@@ -1,0 +1,133 @@
+﻿@page "/"
+@using DayTrip.Shared
+@using System.Web
+@using DayTrip.Shared.Models
+@using Microsoft.AspNetCore.SignalR.Client
+
+@inject IJSRuntime Js;
+@inject NavigationManager NavManager
+@inject HttpClient Http
+
+<LoginManager/>
+
+@if (_highlightedCoords != null)
+{
+    <ActionMenu
+        Coords="@(((double, double))_highlightedCoords)"
+        CloseCallback="@CloseActionMenu"/>
+}
+
+<div style="width: 100%; height:100%">
+    <MapComponent OnLocChangedAsync="@OnLocationChanged"
+                  OnLocSetAsync="@OnLocationSet"
+                  ViewDetailsCallback="@ViewDetails"
+                  OnLongPressAsync="@ShowLongPressMenu"/>
+</div>
+@if (_details != null)
+{
+    <BodyView
+        Pin="@_currentPins[(Guid)_details]"
+        CloseCallback="@CloseDetailsView"/>
+}
+
+@code {
+
+    private HubConnection _pinHubConnection;
+
+    private Dictionary<Guid, PinPreview> _currentPins = new();
+    private Position _curPos;
+
+    private Guid? _details;
+
+    private (double, double)? _highlightedCoords;
+
+    private async Task CloseActionMenu()
+    {
+        await Js.InvokeVoidAsync("removeLongPressIndicator");
+        _highlightedCoords = null;
+
+        StateHasChanged();
+    }
+
+    private async Task ShowLongPressMenu(double lat, double lon)
+    {
+        _highlightedCoords = (lat, lon);
+        await Js.InvokeVoidAsync("placeLongPressIndicator", lat, lon);
+        StateHasChanged();
+    }
+
+    private async Task ViewDetails(Guid id)
+    {
+        if (_details != null)
+            _details = null;
+        StateHasChanged();
+
+        _details = id;
+        StateHasChanged();
+    }
+
+    private void CloseDetailsView()
+    {
+        _details = null;
+        StateHasChanged();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _pinHubConnection = new HubConnectionBuilder().WithUrl(Http.BaseAddress + "PinHub").Build();
+
+        _pinHubConnection.On(nameof(IPinClient.ReceivePin), new Func<PinPreview, Task>(ReceivePin));
+        await _pinHubConnection.StartAsync();
+        Console.WriteLine("Hub connection started");
+
+    }
+
+    private async Task OnLocationSet(double lat, double lon)
+    {
+        Console.WriteLine("Location Set");
+        _curPos = new(lat, lon);
+        await GetNearby();
+        await JoinSurroundingGroups();
+    }
+
+    private async Task OnLocationChanged(double lat, double lon)
+    {
+        Console.WriteLine("Location Set");
+        _curPos = new(lat, lon);
+    }
+
+    private async Task JoinSurroundingGroups()
+    {
+        await _pinHubConnection.SendAsync("JoinSurroundingTiles", _curPos);
+    }
+
+    private async Task GetNearby()
+    {
+        Console.WriteLine("Get Pin Nearby");
+        var query = HttpUtility.ParseQueryString(String.Empty);
+        query["lat"] = _curPos.Lat.ToString();
+        query["lon"] = _curPos.Lon.ToString();
+        var pins = await Http.GetFromJsonAsync<List<PinPreview>>($"Pin/GetSurrounding?{query}");
+        if (pins != null)
+        {
+            foreach (var p in pins)
+            {
+                await ReceivePin(p);
+            }
+        }
+    }
+
+    private async Task ReceivePin(PinPreview pin)
+    {
+        _currentPins.Add(pin.Id, pin);
+        Console.WriteLine("Pin received");
+        await PlacePin(pin);
+    }
+
+    private async Task PlacePin(PinPreview pin)
+    {
+        await Js.InvokeVoidAsync("placePin", pin);
+    }
+
+
+}

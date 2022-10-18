@@ -1,0 +1,27 @@
+﻿@using System.Web
+@inject HttpClient Http
+@inject NavigationManager NavManager
+
+
+@code {
+
+    [Parameter]
+    public string RedirectUrl { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        {
+            bool loggedIn = await Http.GetFromJsonAsync<bool>("Account/CheckLogin");
+            if (!loggedIn)
+            {
+                var builder = new UriBuilder($"{NavManager.BaseUri}Login");
+                var query = HttpUtility.ParseQueryString(builder.Query);
+                query["redirect"] = RedirectUrl ?? "/";
+                builder.Query = query.ToString() ?? string.Empty;
+                string url = builder.ToString();
+                Console.WriteLine(url);
+                NavManager.NavigateTo(url);
+            }
+        }
+    }
+
+}

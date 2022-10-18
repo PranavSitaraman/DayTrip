@@ -1,0 +1,309 @@
+:root {
+  --font-primary: "Helvetica", sans-serif;
+}
+
+body {
+  color: #434343;
+  margin: 0;
+  font-family: var(--font-primary);
+}
+
+.google-map {
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.date-time {
+  color: #666666;
+}
+
+.body-view {
+  position: fixed;
+  bottom: 0;
+  overflow-y: scroll;
+  left: 0;
+  width: 100vw;
+  max-height: 100vh;
+  background-color: #d9fffe;
+  z-index: 10;
+  border-radius: 30px 30px 0 0;
+}
+.body-view .control-bar {
+  display: flex;
+  justify-items: center;
+  justify-content: space-between;
+  padding: 10px 10px 0 10px;
+}
+.body-view .control-bar ion-icon {
+  font-size: 1.6em;
+}
+.body-view .control-bar .save-icon {
+  flex: 0 1 auto;
+  visibility: hidden;
+}
+.body-view .control-bar .expand-icon, .body-view .control-bar .close-icon {
+  flex: 0 1 auto;
+}
+
+.long-press-menu {
+  background-color: #d9fffe;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  display: flex;
+  margin: 10px;
+  border-radius: 10px;
+}
+.long-press-menu div {
+  padding: 15px;
+}
+
+.modal-create-pin {
+  display: flex;
+  z-index: 102;
+  flex-direction: column;
+  background-color: #d9fffe;
+  border-radius: 10px;
+  padding: 10px;
+  width: 80vw;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.25);
+}
+.modal-create-pin .blazored-modal-title {
+  margin: 0;
+}
+.modal-create-pin .blazored-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 5px 1em 5px;
+}
+.modal-create-pin form {
+  box-sizing: border-box;
+}
+.modal-create-pin form button {
+  font-size: 1em;
+  font-weight: bold;
+  background-color: #73fffb;
+  color: #434343;
+  border: 0;
+  padding: 10px;
+  border-radius: 5px;
+}
+.modal-create-pin form div {
+  padding: 5px;
+}
+.modal-create-pin form div:not(div:nth-last-child(2)) {
+  border-bottom: 1px white solid;
+}
+.modal-create-pin form input, .modal-create-pin form select, .modal-create-pin form textarea {
+  outline: none;
+  font-size: 1em;
+  padding: 0;
+  font-family: var(--font-primary);
+  border: 0;
+  background-color: transparent;
+}
+.modal-create-pin form .file-upload {
+  outline: none;
+  font-size: 1em;
+  padding: 0;
+  font-family: var(--font-primary);
+  border: 0;
+  background-color: transparent;
+}
+.modal-create-pin form .file-upload input[type=file] {
+  display: none;
+}
+
+input {
+  width: 100%;
+}
+
+button.gm-ui-hover-effect {
+  outline: none;
+}
+
+[contenteditable=true]:focus {
+  outline: none;
+}
+
+.comment-sender {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: calc(100% - 20px);
+  border-radius: 10px;
+  background-color: #c0fffd;
+  margin: 0 10px;
+  padding-right: 10px;
+  column-gap: 10px;
+  box-sizing: border-box;
+  z-index: 10;
+}
+.comment-sender input {
+  font-family: var(--font-primary);
+  outline: none;
+  font-size: 1em;
+  padding: 10px;
+  border-radius: 10px;
+  border: 0;
+  background-color: transparent;
+}
+.comment-sender button {
+  padding: 0;
+  display: flex;
+  flex-grow: 0;
+  height: 100%;
+  border-width: 0;
+  background-color: transparent;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+.comment-sender input {
+  flex-grow: 1;
+}
+
+.sub-heading {
+  font-size: 1.2em;
+  margin: 0;
+  padding: 10px;
+}
+
+.comment-container {
+  padding: 0 10px;
+}
+
+.comment {
+  padding: 10px 0;
+}
+.comment h2 {
+  font-size: 1em;
+  margin: 0;
+}
+.comment .date-time {
+  font-size: 0.8em;
+  margin: 0;
+  font-weight: normal;
+}
+.comment p {
+  font-size: 1em;
+  padding-top: 7px;
+  margin: 0;
+}
+.comment:not(:last-child) {
+  border-bottom: 1px #a6fffd solid;
+}
+
+.post-view {
+    text-align: center;
+    padding: 10px;
+}
+.post-view h1 {
+  font-size: 1.4em;
+  margin: 0;
+}
+.post-view h2 {
+  font-size: 0.8em;
+  margin: 0;
+  font-weight: normal;
+}
+.post-view .date-time {
+  font-size: 0.8em;
+  margin: 0;
+  font-weight: lighter;
+}
+.post-view p {
+  padding-top: 10px;
+  font-size: 1em;
+  margin: 0;
+}
+.post-view .image-container {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    padding: 20px 10px;
+    box-sizing: border-box;
+}
+.post-view .image-container img {
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+
+.google-map-info {
+  cursor: default;
+}
+.google-map-info h2 {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: 1.6em;
+  color: #434343;
+}
+
+.popup-bubble {
+  /* Position the bubble centred-above its parent. */
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -100%);
+  /* Style the bubble. */
+  background-color: #8dfffc;
+  padding: 5px;
+  border-radius: 5px;
+  font-family: sans-serif;
+  overflow-y: auto;
+  max-height: 60px;
+}
+.popup-bubble ion-icon {
+  font-size: 1.6em;
+  color: #666666;
+  padding-left: 5px;
+}
+
+/* The parent of the bubble. A zero-height div at the top of the tip. */
+.popup-bubble-anchor {
+  /* Position the div a fixed distance above the tip. */
+  position: absolute;
+  width: 100%;
+  bottom: 8px;
+  left: 0;
+}
+.popup-bubble-anchor::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Center the tip horizontally. */
+  transform: translate(-50%, 0);
+  /* The tip is a https://css-tricks.com/snippets/css/css-triangle/ */
+  width: 0;
+  height: 0;
+  /* The tip is 8px high, and 12px wide. */
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #8dfffc;
+}
+
+/* This element draws the tip. */
+/* JavaScript will position this div at the bottom of the popup tip. */
+.popup-container {
+  cursor: auto;
+  height: 0;
+  position: absolute;
+  /* The max width of the info window. */
+  width: 200px;
+}
+
+/*# sourceMappingURL=site.css.map */

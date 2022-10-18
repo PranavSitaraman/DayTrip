@@ -1,0 +1,42 @@
+﻿@using DayTrip.Shared.Models
+@using Blazored.Modal.Services
+@using Blazored.Modal
+@inject HttpClient Http;
+
+<div class="long-press-menu">
+     <div @onclick="CloseCallback">
+        <ion-icon name="close" class="close-icon"></ion-icon>
+    </div>
+    <div @onclick="CreatePin">Create Pin</div>
+</div>
+
+@code {
+
+    [Parameter]
+    public (double, double) Coords { get; set; }
+    [Parameter]
+    public Func<Task> CloseCallback { get; set; }
+
+    [CascadingParameter] public IModalService Modal { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    private async Task CreatePin()
+    {
+        var parameters = new ModalParameters();
+        parameters.Add(nameof(PinCreate.Position), Coords);
+        ModalOptions options = new()
+        {
+            Class = "modal-create-pin"
+        };
+        var modal = Modal.Show<PinCreate>("Create Pin", parameters,  options);
+        var modalResult = await modal.Result;
+        if (!modalResult.Cancelled)
+        {
+            await CloseCallback();
+        }
+    }
+
+}

@@ -1,0 +1,61 @@
+﻿@using DayTrip.Shared.Models
+@using Microsoft.AspNetCore.SignalR.Client
+@using DayTrip.Shared
+@inject HttpClient Http
+@implements ICommentClient
+
+<div class="comment-container">
+@foreach (var c in _comments.Zip(_authors, Tuple.Create))
+{
+    <div class="comment" style="font-family:'Courier New';font-weight:bold">
+        <h2 style="font-family:'Courier New';font-weight:bold">@c.Item2</h2>
+        <DateTimeDisplay Date="@c.Item1.Created"/>
+        <p style="font-family:'Courier New';font-weight:bold">@c.Item1.Text</p>
+    </div>
+}
+    
+</div>
+
+@code {
+
+    [Parameter]
+    public Guid PinId { get; set; }
+
+    private List<Comment> _comments = new();
+    private List<string> _authors = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _comments = await Http.GetFromJsonAsync<List<Comment>>($"Pin/GetComments/{PinId}");
+        if (_comments != null)
+        {
+            foreach (Comment c in _comments)
+            {
+                string authorName = await GetAuthorName(c.Author);
+                _authors.Add(authorName);
+            }
+        }
+        var hubConnection = new HubConnectionBuilder()
+            .WithUrl(Http.BaseAddress + "CommentHub")
+            .Build();
+        
+        await hubConnection.StartAsync();
+        
+        await hubConnection.SendAsync("JoinPinRoom", PinId);
+        hubConnection.On<Comment>(nameof(ReceiveComment), ReceiveComment);
+    }
+    
+    private async Task<string> GetAuthorName(Guid authorId)
+    {
+        return await Http.GetFromJsonAsync<string>($"Account/GetName/{authorId}");
+    }
+    
+    public async Task ReceiveComment(Comment comment)
+    {
+        Console.WriteLine(comment);
+        _comments.Insert(0, comment);
+        _authors.Insert(0, await GetAuthorName(comment.Author));
+        StateHasChanged();
+    }
+
+}

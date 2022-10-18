@@ -1,0 +1,71 @@
+@page "/Register"
+@inject HttpClient HttpClient
+@inject NavigationManager NavigationManager;
+@using Blazored.FluentValidation
+@using System.Net
+@using DayTrip.Shared.UserManagement
+
+<div class="center-align-background" style="width:50%; margin-left:auto; margin-right:auto;"> 
+    <div class="form-outer" style="min-width: 250px; max-width: 500px; margin-left:auto; margin-right:auto">
+        <EditForm Model="@RegModel" OnValidSubmit="@Submit">
+            <FluentValidationValidator/>
+            <img src="/assets/icons/DayTrip.png" style="padding-top:5%; border-radius:10px;display: block;margin-left: auto; margin-right: auto;" width = "50%" height = "auto"/>
+            <div class="inline-entry">
+                <div class="form-input">
+                    <label>First Name</label>
+                    <div>
+                        <InputText style="width: 100%; box-sizing: border-box; font-family:'Courier New';font-weight:bold" id="first-name" placeholder="Alice" @bind-Value="RegModel.FirstName"/>
+                    </div>
+                </div>
+                <br/>
+                <div class="form-input">
+                    <label>Last Name</label>
+                    <div>
+                        <InputText style="width: 100%; box-sizing: border-box; font-family:'Courier New';font-weight:bold" id="last-name" placeholder="Smith" @bind-Value="RegModel.LastName"/>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div class="form-input">
+                <label>Email</label>
+                <div>
+                    <InputText style="width: 100%; box-sizing: border-box; font-family:'Courier New';font-weight:bold" id="email" placeholder="alice-smith@example.com" @bind-Value="RegModel.Email"/>
+                </div>
+            </div>
+            <br/>
+            <div class="form-input">
+                <label>Password</label>
+                <div>
+                    <InputText style="width: 100%; box-sizing: border-box; font-family:'Courier New';font-weight:bold" id="password" placeholder="password" @bind-Value="RegModel.Password"/>
+                </div>
+            </div>
+            <br/>
+            <div class="form-error">
+                <ValidationSummary/>
+            </div>
+
+            <div class="centered-button-group">
+                <button type="submit" style="font-family:'Courier New';font-weight:bold">Register</button>
+            </div>
+
+        </EditForm>
+
+    </div>
+
+</div>
+
+@code {
+    private RegisterModel RegModel = new();
+
+    private async void Submit()
+    {
+        if (RegModel.ModelsIsNull()) return;
+        HttpResponseMessage response = await HttpClient.PostAsJsonAsync("Account/Register", RegModel);
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            NavigationManager.NavigateTo("/Login", forceLoad:true);
+        }
+    }
+
+}

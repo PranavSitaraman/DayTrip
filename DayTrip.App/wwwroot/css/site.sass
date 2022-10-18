@@ -1,0 +1,306 @@
+﻿//9BECEA - Blue
+//D2F65E - Green
+//Pins
+//Ff454b - Red
+//E98116 - Orange
+//F6DE5B - Yellow
+//Text Boxes
+//FDFDED - Cream
+//F5F5F5 - Gray
+$bkgd-primary: #d9fffe
+$text-primary: #434343
+$text-light: #666666
+
+\:root
+  --font-primary: 'Helvetica', sans-serif
+  
+body
+  color: $text-primary
+  margin: 0
+  font-family: var(--font-primary)
+
+.google-map
+  width: 100%
+  height: 100%
+  z-index: 0
+  position: fixed
+  top: 0
+  left: 0
+
+.date-time
+  color: $text-light
+
+  
+.body-view
+  position: fixed
+  bottom: 0
+  overflow-y: scroll
+  left: 0
+  width: 100vw
+  max-height: 100vh
+  background-color: $bkgd-primary
+  z-index: 10
+  border-radius: 30px 30px 0 0
+
+  .control-bar
+    display: flex
+    justify-items: center
+    justify-content: space-between
+    // 10px padding on everything but bottom
+    padding: 10px 10px 0 10px
+
+    ion-icon
+      font-size: 1.6em
+
+    .save-icon
+      flex: 0 1 auto
+      visibility: hidden
+
+    .expand-icon, .close-icon
+      flex: 0 1 auto
+
+.long-press-menu
+  background-color: $bkgd-primary
+  position: fixed
+  top: 0
+  left: 0
+  z-index: 10
+  display: flex
+  margin: 10px
+  border-radius: 10px
+
+  div
+    padding: 15px
+      
+.modal-create-pin
+  display: flex
+  z-index: 102
+  flex-direction: column
+  background-color: $bkgd-primary
+  border-radius: 10px
+  padding: 10px
+  width: 80vw
+  
+  box-shadow: 0 2px 2px rgba(0,0,0,.25)
+  
+  .blazored-modal-title
+    margin: 0
+  .blazored-modal-header 
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: 5px 5px 1em 5px
+    
+  form
+    box-sizing: border-box
+    button 
+      font-size: 1em
+      font-weight: bold
+      background-color: darken($bkgd-primary, 20%)
+      color: $text-primary
+      border: 0 
+      padding: 10px
+      border-radius: 5px
+      
+    div
+      padding: 5px
+    div:not(div:nth-last-child(2))
+      border-bottom: 1px lighten($bkgd-primary, 10%) solid
+    
+    input, select, textarea
+      outline: none
+      font-size: 1em
+      padding: 0
+      font-family: var(--font-primary)
+      border: 0
+      background-color: transparent
+    
+    .file-upload
+      outline: none
+      font-size: 1em
+      padding: 0
+      font-family: var(--font-primary)
+      border: 0
+      background-color: transparent
+      
+      input[type="file"]
+        display: none
+
+
+
+input
+      width: 100%
+  
+button.gm-ui-hover-effect
+  outline: none
+  
+[contenteditable="true"]:focus
+  outline: none
+
+.comment-sender
+  display: flex
+  flex-direction: row
+  justify-content: space-between
+  align-items: center
+  width: calc(100% - 20px)
+  border-radius: 10px
+  background-color: darken($bkgd-primary, 5%)
+  margin: 0 10px
+  padding-right: 10px
+  column-gap: 10px
+  box-sizing: border-box
+  z-index: 10
+  
+  input
+    font-family: var(--font-primary)
+    outline: none
+    font-size: 1em
+    padding: 10px
+    border-radius: 10px
+    border: 0
+    background-color: transparent
+    
+  button
+    padding: 0
+    display: flex
+    flex-grow: 0
+    height: 100%
+    border-width: 0
+    background-color: transparent
+    align-content: center
+    justify-content: center
+    align-items: center
+    flex-direction: row
+
+  input
+    flex-grow: 1
+
+.sub-heading
+  font-size: 1.2em
+  margin: 0
+  padding: 10px
+
+.comment-container
+  padding: 0 10px
+.comment
+  padding: 10px 0
+
+  h2
+    font-size: 1em
+    margin: 0
+
+  .date-time
+    font-size: 0.8em
+    margin: 0
+    font-weight: normal
+  p
+    font-size: 1em
+    padding-top: 7px
+    margin: 0
+    
+  &:not(:last-child)
+    border-bottom: 1px darken($bkgd-primary, 10%) solid
+
+.post-view
+  padding: 10px
+
+  h1
+    font-size: 1.4em
+    margin: 0
+
+  h2
+    font-size: 0.8em
+    margin: 0
+    font-weight: normal
+
+  .date-time
+    font-size: 0.8em
+    margin: 0
+    font-weight: lighter
+
+  p
+    padding-top: 10px
+    font-size: 1em
+    margin: 0
+  
+  .image-container
+    width: 100%
+    overflow-y: scroll
+    padding: 10px 5px
+    box-sizing: border-box
+    img
+      box-sizing: border-box
+      height: 100%
+      width: 100%
+      object-fit: cover
+
+
+.google-map-info
+  cursor: default
+  h2
+    margin: 0
+    font-family: var(--font-primary)
+    font-size: 1.6em
+    color: $text-primary
+
+
+.popup-bubble
+  /* Position the bubble centred-above its parent.
+  display: flex
+  
+  align-items: center
+  ion-icon
+    font-size: 1.6em
+    color: $text-light
+    padding-left: 5px
+  position: absolute
+  top: 0
+  left: 0
+  transform: translate(-50%, -100%)
+
+  /* Style the bubble.
+  background-color: darken($bkgd-primary, 15%)
+  padding: 5px
+  border-radius: 5px
+  font-family: sans-serif
+  overflow-y: auto
+  max-height: 60px
+
+/* The parent of the bubble. A zero-height div at the top of the tip.
+
+.popup-bubble-anchor
+  /* Position the div a fixed distance above the tip.
+  position: absolute
+  width: 100%
+  bottom: 8px
+  left: 0
+
+  &::after
+    content: ""
+    position: absolute
+    top: 0
+    left: 0
+
+    /* Center the tip horizontally.
+    transform: translate(-50%, 0)
+
+    /* The tip is a https://css-tricks.com/snippets/css/css-triangle/
+    width: 0
+    height: 0
+
+    /* The tip is 8px high, and 12px wide.
+    border-left: 6px solid transparent
+    border-right: 6px solid transparent
+    border-top: 8px solid darken($bkgd-primary, 15%)
+
+/* This element draws the tip.
+
+/* JavaScript will position this div at the bottom of the popup tip.
+
+.popup-container
+  cursor: auto
+  height: 0
+  position: absolute
+
+  /* The max width of the info window.
+  width: 200px

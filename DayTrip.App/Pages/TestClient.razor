@@ -1,0 +1,170 @@
+﻿@page "/TestClient"
+@inject HttpClient Http
+@inject NavigationManager NavManager
+@using System.Web
+@using DayTrip.Shared
+@using DayTrip.Shared.Models
+@using Microsoft.AspNetCore.SignalR.Client;
+
+<h1>Test Client</h1>
+
+
+<h2>Set Position</h2>
+<div>Current Position:</div>
+<div>Latitude: @_curPos.Lat</div>
+<div>Longitude: @_curPos.Lon</div>
+<EditForm Model="@_newPos" OnValidSubmit="@ChangeLocation">
+    <label>Latitude</label>
+    <InputNumber @bind-Value="@_newPos.Lat"/>
+
+    <label>Longitude</label>
+    <InputNumber @bind-Value="@_newPos.Lon"/>
+
+    <button type="submit">Set</button>
+
+</EditForm>
+
+<h2>Submit Pin</h2>
+
+<EditForm Model="@_model" OnValidSubmit="@SubmitPin">
+    <label>Title</label>
+    <InputText @bind-Value="@_model.Title"/>
+
+    <label>Description</label>
+    <InputText @bind-Value="@_model.Description"/>
+
+    <label>Expires</label>
+    <InputDate @bind-Value="@_model.Expires"/>
+
+    <label>Type</label>
+    <InputSelect @bind-Value="_model.Kind">
+        @foreach (var t in Enum.GetValues(typeof(PinKind)))
+        {
+            <option>@t</option>
+        }
+    </InputSelect>
+
+    <button type="submit">Submit</button>
+</EditForm>
+
+<h2>Nearby Pins</h2>
+<button @onclick="GetNearby">Get (HTTP API)</button>
+<table>
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Lat</th>
+        <th>Lon</th>
+        <th>Kind</th>
+        <th>Expires</th>
+        <th>Status</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    @foreach (PinPreview p in _currentPins)
+    {
+        <tr>
+            <td>@p.Title</td>
+            <td>@p.Lat</td>
+            <td>@p.Lon</td>
+            <td>@p.Kind.ToString()</td>
+            <td>@p.Expires.ToString()</td>
+            <td>@p.Status.ToString()</td>
+            <button @onclick=@(() => SeeMore(p))></button>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<h2>Current pin</h2>
+<p>@_curBody.Description</p>
+
+
+
+@code {
+
+    private HubConnection _pinHubConnection;
+
+
+    private Position _curPos = new(0, 0);
+
+    private Position _newPos = new(0, 0);
+
+    private Pin _model = new();
+    private PinBody _curBody = new();
+
+    private List<PinPreview> _currentPins = new();
+    
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await TestLogin();
+        _pinHubConnection = new HubConnectionBuilder().WithUrl(Http.BaseAddress + "PinHub").Build();
+
+        _pinHubConnection.On(nameof(IPinClient.ReceivePin), new Action<PinPreview>(ReceivePin));
+        await _pinHubConnection.StartAsync();
+        Console.WriteLine("Hub connection started");
+        await JoinSurroundingGroups();
+    }
+
+    private async Task JoinSurroundingGroups()
+    {
+        await _pinHubConnection.SendAsync("JoinSurroundingTiles", _curPos);
+
+    }
+
+    private async Task SeeMore(PinPreview p)
+    {
+        PinBody body = await Http.GetFromJsonAsync<PinBody>($"Pin/GetBody/{p.Id}");
+        _curBody = body;
+        StateHasChanged();
+    }
+
+    private async Task TestLogin()
+    {
+        bool loggedIn = await Http.GetFromJsonAsync<bool>("Account/CheckLogin");
+        if (!loggedIn)
+        {
+            var builder = new UriBuilder($"{NavManager.BaseUri}Login");
+            var query = HttpUtility.ParseQueryString(builder.Query);
+            query["redirect"] = "/TestClient";
+            builder.Query = query.ToString() ?? string.Empty;
+            string url = builder.ToString();
+            Console.WriteLine(url);
+            NavManager.NavigateTo(url);
+        }
+    }
+
+    private async Task ChangeLocation()
+    {
+        _curPos = _newPos;
+        await JoinSurroundingGroups();
+    }
+
+    private async Task SubmitPin()
+    {
+        _model.Position = _curPos;
+        await Http.PostAsJsonAsync("Pin/Create", _model);
+        Console.WriteLine($"Posted pin {_model.ToString()}");
+        _model = new();
+    }
+
+    private async Task GetNearby()
+    {
+        var query = HttpUtility.ParseQueryString(String.Empty);
+        query["lat"] = _curPos.Lat.ToString();
+        query["lon"] = _curPos.Lon.ToString();
+        _currentPins = await Http.GetFromJsonAsync<List<PinPreview>>($"Pin/GetSurrounding?{query}");
+        foreach (var p in _currentPins) Console.WriteLine(p);
+    }
+
+    public void ReceivePin(PinPreview pin)
+    {
+        Console.WriteLine(pin);
+        _currentPins.Add(pin);
+        StateHasChanged();
+    }
+
+}

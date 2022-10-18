@@ -1,0 +1,22 @@
+﻿<h3 class="date-time">@_text</h3>
+
+
+@code {
+
+    [Parameter]
+    public DateTime Date { get; set; }
+
+    private string _text;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Date = Date.ToLocalTime();
+        _text = Date switch {
+            var d when d.Date == DateTime.Today => Date.ToString("h:mm tt"),
+            var d when d.Date == DateTime.Today.AddDays(-1) =>"Yesterday, " + Date.ToString("h:mm tt"),
+            var d when d.Year == DateTime.Today.Year => Date.ToString("M, h:mm tt"),
+            _ => Date.ToString("d")
+            };
+    }
+
+}

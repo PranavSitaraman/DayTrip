@@ -1,0 +1,15 @@
+﻿{
+  "compilerOptions": {
+    "sourceMap": true,
+    "target": "ES2015",
+    "lib" : ["ES2015", "DOM"],
+    "module": "es6",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "declaration": false,
+  },
+  "files": [
+    "./index.ts"
+  ]
+}

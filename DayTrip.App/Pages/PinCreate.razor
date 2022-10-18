@@ -1,0 +1,110 @@
+﻿@using DayTrip.Shared.Models
+@using System.Web
+@using System.ComponentModel.DataAnnotations
+@using System.Net.Http.Headers
+@using Blazored.Modal
+@using Blazored.Modal.Services
+@using DayTrip.Shared
+@using DayTrip.App.Pages
+@using Microsoft.AspNetCore.SignalR.Client
+
+@inject NavigationManager NavigationManager;
+@inject HttpClient Http;
+@inject IJSRuntime Js;
+
+<EditForm Model="@_model" OnValidSubmit="@SubmitPin">
+
+    <div>
+        <InputText style="font-family:'Courier New';font-weight:bold" placeholder="Title..." @bind-Value="@_model.Title"/>
+    </div>
+
+    <div>
+        <InputTextArea style="font-family:'Courier New';font-weight:bold" placeholder="Description..." @bind-Value="@_model.Description"/>
+    </div>
+
+    <div>
+        <label style="font-family:'Courier New';font-weight:bold">Expires In:</label>
+        <InputSelectEnum style="font-family:'Courier New';font-weight:bold" @bind-Value="_expiresOptions"/>
+    </div>
+    <div>
+        <label style="font-family:'Courier New';font-weight:bold">Type:</label>
+        <InputSelectEnum style="font-family:'Courier New';font-weight:bold" @bind-Value="_model.Kind"/>
+    </div>
+    <br />
+    <div style="border-style:dotted">
+        <label class="file-upload" style="font-family:'Courier New';font-weight:bold">Upload Image Here (optional)...<InputFile OnChange="@OnFileChanged"/>
+        </label>
+        <br />
+        <br />
+    </div>
+    <br />
+    <br />
+    <div>
+        <button type="submit" style="font-family:'Courier New';font-weight:bold">Post</button>
+    </div>
+</EditForm>
+
+@code {
+
+    [Parameter]
+    public (double, double) Position { get; set; }
+
+    [CascadingParameter]
+    BlazoredModalInstance ModalInstance { get; set; }
+
+    private Pin _model = new();
+    private IBrowserFile _image;
+    private ExpiresOptions _expiresOptions;
+
+    private static Dictionary<ExpiresOptions, TimeSpan> ExpiresTimes = new()
+    {
+        [ExpiresOptions.OneDay] = TimeSpan.FromDays(1),
+        [ExpiresOptions.OneWeek] = TimeSpan.FromDays(7),
+        [ExpiresOptions.OneMonth] = TimeSpan.FromDays(31),
+        [ExpiresOptions.OneYear] = TimeSpan.FromDays(365),
+    };
+
+    enum ExpiresOptions
+    {
+        [Display(Name = "1 Day")] OneDay,
+        [Display(Name = "1 Week")] OneWeek,
+        [Display(Name = "1 Month")] OneMonth,
+        [Display(Name = "1 Year")] OneYear
+    }
+
+    public async Task OnFileChanged(InputFileChangeEventArgs e)
+    {
+        _image = e.File;
+    }
+
+    // Uploads the IBrowserFile to the server and returns the url
+    private async Task<string> UploadImage()
+    {
+        var fileContent = new StreamContent(_image.OpenReadStream(8192000));
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue(_image.ContentType);
+        var result = await Http.PostAsync("Pin/UploadImage", fileContent);
+        var fileUrl = await result.Content.ReadAsStringAsync();
+        return fileUrl;
+    }
+
+    private async Task SubmitPin()
+    {
+        if (_image != null)
+        {
+            string imgUrl = await UploadImage();
+            _model.Image = Http.BaseAddress +  imgUrl;
+            Console.WriteLine(_model.Image);
+        }
+        DateTime expires = DateTime.UtcNow + ExpiresTimes[_expiresOptions];
+        _model.Expires = expires;
+        _model.Position = DayTrip.Shared.Position.FromTuple(Position);
+
+
+        await Http.PostAsJsonAsync("Pin/Create", _model);
+        Console.WriteLine("Pin received");
+        await Js.InvokeVoidAsync("placePin", _model);
+        Console.WriteLine($"Posted pin {_model.ToString()}");
+        await ModalInstance.CloseAsync(ModalResult.Ok("Submitted Successfully"));
+        NavigationManager.NavigateTo("/", forceLoad:true);
+    }
+}

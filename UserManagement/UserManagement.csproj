@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CryptoHelper" Version="3.0.2" />
+      <PackageReference Include="FluentValidation" Version="10.1.0" />
+      <PackageReference Include="linq2db.PostgreSQL" Version="3.3.0" />
+    </ItemGroup>
+
+</Project>

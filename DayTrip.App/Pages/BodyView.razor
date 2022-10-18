@@ -1,0 +1,69 @@
+﻿@using DayTrip.Shared.Models
+@inject HttpClient Http;
+
+@if (_modelReady)
+{
+    <div class="body-view" style="height: @(_height)vh;">
+
+
+        <div class="control-bar">
+            <ion-icon name="bookmark" class="save-icon"></ion-icon>
+            <ion-icon name="@_iconName" class="expand-icon" @onclick="Resize"></ion-icon>
+            <ion-icon class="close-icon" name="close-outline" @onclick="CloseCallback"></ion-icon>
+        </div>
+        <div class="post-view">
+            <h1>@Pin.Title</h1>
+            <h2>@AuthorName</h2>
+            <DateTimeDisplay Date="@Pin.Created"/>
+            <a href="@Body.Description" target="_blank">@Body.Description</a>
+            @if (!string.IsNullOrEmpty(Body.Image))
+            {
+                <div class="image-container">
+                        <img src="@Body.Image" alt="Pin Image"/>
+                </div>
+            }
+        </div>
+        <CommentInterface Pin="@Pin.Id"/>
+        <CommentView PinId="@Pin.Id"/>
+    </div>
+}
+
+@code {
+
+    [Parameter]
+    public PinPreview Pin { get; set; }
+
+    [Parameter]
+    public Action CloseCallback { get; set; }
+
+    public PinBody Body { get; set; }
+    public string AuthorName { get; set; }
+
+    private bool _modelReady { get; set; } = false;
+
+    private int _height { get; set; } = 40;
+
+    private string _iconName { get; set; } = "chevron-up-outline";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Body = await Http.GetFromJsonAsync<PinBody>($"Pin/GetBody/{Pin.Id}");
+        AuthorName = await Http.GetFromJsonAsync<string>($"Account/GetName/{Pin.Author}");
+        _modelReady = true;
+    }
+
+    private void Resize()
+    {
+        if (_height == 40)
+        {
+            _height = 90;
+            _iconName = "chevron-down-outline";
+        }
+        else if (_height == 90)
+        {
+            _height = 40;
+            _iconName = "chevron-up-outline";
+        }
+    }
+
+}

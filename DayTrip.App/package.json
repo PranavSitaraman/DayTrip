@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "@types/blazor__javascript-interop": "^3.1.2",
+    "@types/google.maps": "^3.46.0"
+  },
+  "dependencies": {
+    "@types/es6-promise": "^3.3.0"
+  }
+}

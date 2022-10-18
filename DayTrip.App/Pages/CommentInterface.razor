@@ -1,0 +1,28 @@
+﻿@using DayTrip.Shared.Models
+@inject HttpClient Http
+
+<h3 class="sub-heading">Comments</h3>
+<EditForm Model="@_model" OnValidSubmit="@SubmitComment">
+
+    <div class="comment-sender">
+        <InputText style="font-family:'Courier New';font-weight:bold" placeholder="Add a comment..." @bind-Value="@_model.Text"/>
+        <button type="submit" style="font-family:'Courier New';font-weight:bold"><ion-icon name="send"></ion-icon></button>
+    </div>
+
+</EditForm>
+
+@code {
+    private Comment _model = new();
+    
+    [Parameter]
+    public Guid Pin { get; set; }
+    
+
+    private async Task SubmitComment()
+    {
+        _model.Pin = Pin;
+        await Http.PostAsJsonAsync("Pin/Comment", _model);
+        _model = new();
+    }
+
+}
